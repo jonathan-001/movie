@@ -138,14 +138,20 @@
 
                     <!-- Action Buttons and Rating -->
                     <div class="flex flex-wrap items-center space-x-4 mb-8">
-                        <button class="flex items-center bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg">
-                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6 3v18l14-9z" /></svg>
-                            Watch now
-                        </button>
+                        <a href="{{ movie.watch_link }}" 
+                           class="flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg {% if movie.watch_link %}bg-cyan-400 hover:bg-cyan-500 text-gray-900{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
+                           <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6 3v18l14-9z" /></svg>
+                           Watch now
+                        </a>
                         <button class="flex items-center bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-lg border border-gray-600">
                             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                             Watch List
                         </button>
+                        <a href="{{ movie.download_link }}"
+                           class="flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg {% if movie.download_link %}bg-blue-600 hover:bg-blue-700 text-white{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
+                           <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                           Download
+                        </a>
                         
                         <!-- Rating Display -->
                         <div class="flex items-center space-x-2 text-yellow-400 ml-4">

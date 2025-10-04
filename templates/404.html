@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0d121c; 
+        }
+    </style>
+</head>
+<body class="text-gray-100 flex items-center justify-center min-h-screen">
+    <div class="text-center">
+        <h1 class="text-9xl font-extrabold text-blue-500">404</h1>
+        <p class="text-2xl md:text-3xl font-semibold text-white mt-4">Page Not Found</p>
+        <p class="text-gray-400 mt-4 mb-8">Sorry, the page you are looking for does not exist.</p>
+        <a href="{% url 'home' %}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200">
+            Go to Homepage
+        </a>
+    </div>
+</body>
+</html>

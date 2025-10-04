@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import TVSeries, Season
+from .models import TVSeries, Season, Episode
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
@@ -27,3 +27,9 @@ def get_episodes_for_season(request, season_id):
     episodes = season.episodes.all().order_by('episode_number')
     episodes_data = list(episodes.values('id', 'title', 'episode_number'))
     return JsonResponse({'episodes': episodes_data})
+
+def watch_episode(request, episode_id):
+    episode = get_object_or_404(Episode, pk=episode_id)
+    # This is a placeholder view. You would typically render a template
+    # with a video player here, using episode.watch_link.
+    return render(request, 'watch_player.html', {'episode': episode})

@@ -115,22 +115,28 @@
                         <div class="flex items-center space-x-2 text-gray-400 mt-0.5">
                             <span class="text-xs">{{ series.release_date.year }}</span>
                             <span class="text-xs">•</span>
-                            <span class="text-xs">S{{ series.seasons }}</span><span class="text-xs font-medium bg-gray-700/50 rounded-full px-2 py-0.5">TV</span>
+                            <span class="text-xs">S{{ series.seasons.count }}</span><span class="text-xs font-medium bg-gray-700/50 rounded-full px-2 py-0.5">TV</span>
                         </div>
                     </div>
                 </a>
                 {% endfor %}
             </div>
 
-            <div class="flex justify-center items-center space-x-3 mt-12 mb-8 text-lg font-semibold">
-                <span class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full">1</span>
-                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">2</a>
-                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">3</a>
-                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">4</a>
-                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">5</a>
-                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">6</a>
-                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">7</a>
-                <a href="#" class="text-gray-400 hover:text-blue-500 text-2xl">»</a>
+            <!-- Pagination Controls -->
+            <div class="flex justify-center items-center space-x-1 sm:space-x-3 mt-12 mb-8 text-base sm:text-lg font-semibold">
+                {% if series_list.has_previous %}
+                    <a href="?page=1" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">« First</a>
+                    <a href="?page={{ series_list.previous_page_number }}" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">‹ Previous</a>
+                {% endif %}
+
+                <span class="text-gray-400 p-2">
+                    Page {{ series_list.number }} of {{ series_list.paginator.num_pages }}
+                </span>
+
+                {% if series_list.has_next %}
+                    <a href="?page={{ series_list.next_page_number }}" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">Next ›</a>
+                    <a href="?page={{ series_list.paginator.num_pages }}" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">Last »</a>
+                {% endif %}
             </div>
         </main>
     </div>

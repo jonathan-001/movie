@@ -5,7 +5,7 @@ from django.db import models
 class TVSeries(models.Model):
     title = models.CharField(max_length=255, verbose_name="Series Title")
     overview = models.TextField()
-    start_date = models.DateField(null=True, blank=True)
+    release_date = models.DateField(null=True, blank=True, verbose_name="Release Date")
     country = models.CharField(max_length=100, null=True, blank=True)
     imdb_rating = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
     poster_image = models.ImageField(upload_to='series_posters/', null=True, blank=True)
@@ -37,6 +37,12 @@ class Season(models.Model):
         ordering = ['series', 'season_number']
 
 class Episode(models.Model):
+    series = models.ForeignKey(
+        TVSeries,
+        on_delete=models.CASCADE,
+        related_name='all_episodes',
+        null=True # Allow null for existing records before migration
+    )
     season = models.ForeignKey(
         Season, 
         on_delete=models.CASCADE, 
@@ -46,6 +52,10 @@ class Episode(models.Model):
     title = models.CharField(max_length=255, verbose_name="Episode Title")
     air_date = models.DateField(null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True, verbose_name="Duration (minutes)")
+
+    def save(self, *args, **kwargs):
+        self.series = self.season.series
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"S{self.season.season_number}E{self.episode_number}: {self.title}"
