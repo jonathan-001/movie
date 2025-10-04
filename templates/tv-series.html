@@ -97,7 +97,30 @@
             </div>
             
             <div id="series-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
-                </div>
+                {% for series in series_list %}
+                <a href="{% url 'series_detail' series.id %}" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
+                    <div class="relative pb-[150%]">
+                        {% if series.poster_image %}
+                        <img src="{{ series.poster_image.url }}" alt="{{ series.title }} Poster"
+                             onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';"
+                             class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
+                        {% else %}
+                        <img src="https://placehold.co/200x300/444444/ffffff?text=No+Image" alt="{{ series.title }} Poster"
+                             class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
+                        {% endif %}
+                        <span class="hd-badge">HD</span>
+                    </div>
+                    <div class="pt-2">
+                        <h3 class="text-sm font-semibold truncate text-white">{{ series.title }}</h3>
+                        <div class="flex items-center space-x-2 text-gray-400 mt-0.5">
+                            <span class="text-xs">{{ series.release_date.year }}</span>
+                            <span class="text-xs">•</span>
+                            <span class="text-xs">S{{ series.seasons }}</span><span class="text-xs font-medium bg-gray-700/50 rounded-full px-2 py-0.5">TV</span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
 
             <div class="flex justify-center items-center space-x-3 mt-12 mb-8 text-lg font-semibold">
                 <span class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full">1</span>
@@ -112,47 +135,5 @@
         </main>
     </div>
 
-    <script>
-        const tvSeriesData = [
-            { title: "The Terminal List: Dark Wolf", duration: "SS 1 EP 7", type: "TV", img: "https://placehold.co/200x300/4c4c4c/ffffff?text=Dark+Wolf" },
-            { title: "Marvel Zombies", duration: "SS 1 EP 5", type: "TV", img: "https://placehold.co/200x300/8b0000/ffffff?text=Zombies" },
-            { title: "Hotel Costiera", duration: "SS 1 EP 4", type: "TV", img: "https://placehold.co/200x300/3e4960/ffffff?text=Hotel" },
-            { title: "The Morning Show", duration: "SS 4 EP 2", type: "TV", img: "https://placehold.co/200x300/181818/ffffff?text=Morning+Show" },
-            { title: "The Twisted Tale of Amanda Knox", duration: "SS 1 EP 5", type: "TV", img: "https://placehold.co/200x300/a57d6b/111111?text=Knox" },
-            { title: "The Hack", duration: "SS 1 EP 5", type: "TV", img: "https://placehold.co/200x300/3b82f6/ffffff?text=The+Hack" },
-            { title: "Slow Horses", duration: "SS 5 EP 5", type: "TV", img: "https://placehold.co/200x300/999999/111111?text=Slow+Horses" },
-            { title: "Secrets of Celebrity Secrets", duration: "SS 6 EP 6", type: "TV", img: "https://placehold.co/200x300/1e293b/ffffff?text=Secrets" },
-
-            { title: "Last Week Tonight with John Oliver", duration: "SS 12 EP 12", type: "TV", img: "https://placehold.co/200x300/505050/ffffff?text=Oliver" },
-            { title: "Platonic", duration: "SS 2 EP 9", type: "TV", img: "https://placehold.co/200x300/e9a28c/444444?text=Platonic" },
-            { title: "Gen V", duration: "SS 2 EP 4", type: "TV", img: "https://placehold.co/200x300/f06a00/ffffff?text=Gen+V" },
-            { title: "High Potential", duration: "SS 1 EP 2", type: "TV", img: "https://placehold.co/200x300/ff69b4/111111?text=High+Pot" },
-            { title: "Brilliant Minds", duration: "SS 1 EP 5", type: "TV", img: "https://placehold.co/200x300/2f4f4f/ffffff?text=Brilliant" },
-            { title: "Alien: Earth", duration: "SS 1 EP 6", type: "TV", img: "https://placehold.co/200x300/0f172a/60a5fa?text=Alien" },
-            { title: "The Rainmaker", duration: "SS 1 EP 1", type: "TV", img: "https://placehold.co/200x300/4c4c4c/ffffff?text=Rainmaker" },
-            { title: "Task", duration: "SS 1 EP 3", type: "TV", img: "https://placehold.co/200x300/1f2937/ffffff?text=Task" },
-        ];
-        
-        // Re-using the generic card rendering functions
-        function createCardHtml(data) {
-            const playButtonOverlay = data.isPlayButton ? `<div class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg"><svg class="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 3v18l14-9z" /></svg></div>` : '';
-            const tagBg = data.type === 'Anime' ? 'bg-red-800/50' : 'bg-gray-700/50';
-            const metadata = `<span class="text-xs">${data.duration}</span><span class="text-xs font-medium ${tagBg} rounded-full px-2 py-0.5">${data.type}</span>`;
-            return `<a href="#" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10"><div class="relative pb-[150%]"><img src="${data.img}" alt="${data.title} Poster" onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';" class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300"><span class="hd-badge">HD</span>${playButtonOverlay}</div><div class="pt-2"><h3 class="text-sm font-semibold truncate text-white">${data.title}</h3><div class="flex items-center space-x-2 text-gray-400 mt-0.5"><span class="text-xs">TV</span><span class="text-xs">•</span>${metadata}</div></div></a>`;
-        }
-
-        function populateGrid(elementId, dataArray) {
-            const container = document.getElementById(elementId);
-            if (container) {
-                container.innerHTML = dataArray.map(createCardHtml).join('');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Populate the TV Series grid with sample data (repeating data to fill two rows)
-            const fullSeriesData = [...tvSeriesData, ...tvSeriesData.slice(0, 7)];
-            populateGrid('series-grid', fullSeriesData);
-        });
-    </script>
 </body>
 </html>

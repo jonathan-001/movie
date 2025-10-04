@@ -45,6 +45,9 @@ class Movie(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+    download_link = models.URLField(max_length=500, null=True, blank=True)
+    watch_link = models.URLField(max_length=500, null=True, blank=True)
+
     
     def __str__(self):
         return self.title

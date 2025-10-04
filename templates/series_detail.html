@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ series.title }} - Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root { 
+            --primary-blue: #3b82f6; 
+            --detail-bg-color: #1c2b2c; /* Dark teal/slate background for the detail card */
+            --header-bg: #111827; 
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0d121c; 
+            overflow-x: hidden;
+            color: #e5e7eb; /* Light text */
+        }
+        
+        /* Custom scrollbar styles */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        
+        /* Series Detail Container Styling */
+        .detail-container {
+            position: relative;
+            background-color: var(--detail-bg-color);
+            min-height: 80vh;
+            margin-top: -80px; /* Pull the card up over the header background */
+            z-index: 10;
+        }
+
+        /* Hero Background Effect */
+        .hero-background {
+            height: 300px; /* Define height of the header area */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            /* Create a blurred, dark overlay effect similar to the screenshot */
+            filter: blur(5px) brightness(0.7);
+            transform: scale(1.05); /* To hide blur edges */
+        }
+        
+        /* HD Badge style */
+        .hd-badge { 
+            background-color: var(--primary-blue); 
+            color: white; 
+            padding: 2px 6px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            border-radius: 4px; 
+            position: absolute; 
+            top: 8px; 
+            right: 8px; 
+            z-index: 20; 
+        }
+
+        /* Metadata table style */
+        .metadata-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .metadata-label {
+            width: 120px; /* Fixed width for labels */
+            font-weight: 600;
+            color: #9ca3af; /* Gray text for labels */
+            flex-shrink: 0;
+        }
+        .metadata-value {
+            flex-grow: 1;
+        }
+        
+        /* Dropdown/Select styling */
+        .series-select {
+            background-color: #374151; /* Gray-700 */
+            border: 1px solid #4b5563; /* Gray-600 */
+            color: #e5e7eb;
+            padding: 10px 14px;
+            border-radius: 8px;
+            appearance: none; /* Remove default arrow */
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+
+    <div id="app">
+        <!-- Navigation Bar (Reusing Movie Detail Header) -->
+        <header class="header-bg shadow-lg z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="text-3xl font-extrabold flex items-center">
+                        <span class="text-blue-500">1</span>
+                        <span class="text-white">HD.</span>
+                        <span class="text-gray-500 font-normal text-lg">TO</span>
+                    </div>
+                    <div class="hidden md:block relative w-64">
+                        <input type="text" placeholder="Search for movies or tv series" class="py-2 px-4 w-full text-sm rounded-lg bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <nav class="hidden sm:flex space-x-6 text-sm font-medium">
+                    <a href="{% url 'home' %}" class="text-white hover:text-blue-400 transition">HOME</a>
+                    <a href="{% url 'movies' %}" class="text-white hover:text-blue-400 transition">MOVIES</a>
+                    <a href="{% url 'tvseries' %}" class="text-white hover:text-blue-400 transition">TV SERIES</a>
+                    <a href="#" class="text-white hover:text-blue-400 transition">TOP IMDB</a>
+                </nav>
+                <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Login</a>
+            </div>
+        </header>
+
+        <!-- Hero Section with Blurred Background -->
+        <div class="hero-background" style="background-image: url('{% if series.poster_image %}{{ series.poster_image.url }}{% else %}https://placehold.co/1920x300/101010/FFFFFF?text=No+Background{% endif %}');">
+        </div>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Detail Card (Overlays the blurred background) -->
+            <div class="detail-container rounded-xl shadow-2xl p-6 md:p-10 flex flex-col md:flex-row gap-8">
+                
+                <!-- Left: Poster Image -->
+                <div class="relative w-full md:w-64 flex-shrink-0 -mt-24 md:-mt-40">
+                    <img src="{% if series.poster_image %}{{ series.poster_image.url }}{% else %}https://placehold.co/400x600/444444/ffffff?text=No+Image{% endif %}" 
+                         alt="{{ series.title }} Poster" 
+                         class="w-full h-auto rounded-lg shadow-xl border-4 border-white/10" />
+                    <span class="hd-badge">HD</span>
+                </div>
+
+                <!-- Right: Content and Episode Selector -->
+                <div class="flex-grow pt-0 md:pt-4 flex flex-col lg:flex-row gap-8">
+                    
+                    <!-- LEFT COLUMN: Metadata and Overview -->
+                    <div class="lg:w-2/3">
+                        <!-- Back Button -->
+                        <a href="{% url 'tvseries' %}" class="inline-flex items-center text-sm font-medium text-gray-400 hover:text-blue-500 transition mb-4 p-2 bg-gray-700/50 rounded-lg">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            TV Series
+                        </a>
+                        
+                        <!-- Title -->
+                        <h1 class="text-4xl font-extrabold text-white mb-6">{{ series.title }}</h1>
+
+                        <!-- Action Buttons and Rating -->
+                        <div class="flex flex-wrap items-center space-x-4 mb-8">
+                            <button class="flex items-center bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-lg border border-gray-600">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                Watch List
+                            </button>
+                            
+                            <!-- Rating Display -->
+                            <div class="flex items-center space-x-2 text-yellow-400 ml-4">
+                                <span class="text-sm font-semibold text-white">{{ series.imdb_rating|default:"N/A" }} / 10 </span>
+                                <div class="flex space-x-1">
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
+                                    <svg class="w-5 h-5 fill-current text-gray-500" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
+                                    <svg class="w-5 h-5 fill-current text-gray-500" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overview -->
+                        <h3 class="text-xl font-bold mb-3 text-white border-b border-gray-700 pb-2">Overview</h3>
+                        <p class="text-gray-300 leading-relaxed mb-6">
+                            {{ series.overview|default:"No overview available." }}
+                        </p>
+                        <button id="read-full" class="text-blue-500 hover:text-blue-400 text-sm font-semibold mb-6 transition">
+                            + read full
+                        </button>
+
+                        <!-- Metadata Table -->
+                        <div class="space-y-2 text-sm text-white">
+                            <div class="metadata-row">
+                                <span class="metadata-label">Casts</span>
+                                <span class="metadata-value">{{ series.cast_members|default:"N/A" }}</span>
+                            </div>
+                            <div class="metadata-row">
+                                <span class="metadata-label">Genres</span>
+                                <span class="metadata-value">{{ series.genres|default:"N/A" }}</span>
+                            </div>
+                            <div class="metadata-row">
+                                <span class="metadata-label">Seasons</span>
+                                <span class="metadata-value">{{ series.seasons|default:"N/A" }} Seasons</span>
+                            </div>
+                            <div class="metadata-row">
+                                <span class="metadata-label">Country</span>
+                                <span class="metadata-value">{{ series.country|default:"N/A" }}</span>
+                            </div>
+                            <div class="metadata-row">
+                                <span class="metadata-label">IMDb</span>
+                                <span class="metadata-value text-yellow-400">{{ series.imdb_rating|default:"N/A" }}</span>
+                            </div>
+                            <div class="metadata-row">
+                                <span class="metadata-label">Release</span>
+                                <span class="metadata-value">{{ series.release_date|date:"Y-m-d"|default:"N/A" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RIGHT COLUMN: Episode Selector -->
+                    <div class="lg:w-1/3 bg-gray-800/70 p-6 rounded-lg self-stretch flex flex-col justify-start">
+                        <h3 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Select Episode</h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Season Dropdown -->
+                            <div class="relative">
+                                <label for="season-select" class="block text-sm font-medium text-gray-400 mb-1">Season</label>
+                                <select id="season-select" class="series-select">
+                                    {% for season in series.seasons.all %}
+                                    <option value="{{ season.id }}">{{ season.name }}</option>
+                                    {% empty %}
+                                    <option disabled>No seasons available</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Episode Dropdown -->
+                            <div class="relative">
+                                <label for="episode-select" class="block text-sm font-medium text-gray-400 mb-1">Episode</label>
+                                <select id="episode-select" class="series-select">
+                                    <option disabled>Select a season first</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Watch Button for Selected Episode -->
+                        <button id="watch-button"
+                                class="w-full mt-6 flex items-center justify-center bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg">
+                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6 3v18l14-9z" /></svg>
+                            Watch S3 E4
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Placeholder for related content / comments below the main card -->
+            <div class="h-64 mt-12 mb-12 bg-gray-800/50 rounded-lg p-6 flex items-center justify-center">
+                <p class="text-gray-500">Episode List and Comments Section Placeholder</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const seasonSelect = document.getElementById('season-select');
+            const episodeSelect = document.getElementById('episode-select');
+            const watchButton = document.getElementById('watch-button');
+
+            async function updateEpisodes(seasonId) {
+                // Clear episode dropdown and show loading state
+                episodeSelect.innerHTML = '<option>Loading episodes...</option>';
+                episodeSelect.disabled = true;
+                watchButton.textContent = 'Loading...';
+
+                try {
+                    const response = await fetch(`/tvseries/api/season/${seasonId}/episodes/`);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+
+                    // Clear again and enable
+                    episodeSelect.innerHTML = '';
+                    episodeSelect.disabled = false;
+
+                    if (data.episodes && data.episodes.length > 0) {
+                        data.episodes.forEach(episode => {
+                            const option = new Option(`E${episode.episode_number}: ${episode.title}`, episode.id);
+                            episodeSelect.add(option);
+                        });
+                    } else {
+                        episodeSelect.innerHTML = '<option disabled>No episodes found</option>';
+                        episodeSelect.disabled = true;
+                    }
+                } catch (error) {
+                    console.error('Error fetching episodes:', error);
+                    episodeSelect.innerHTML = '<option disabled>Error loading episodes</option>';
+                }
+                updateWatchButton();
+            }
+
+            function updateWatchButton() {
+                const selectedSeasonText = seasonSelect.options[seasonSelect.selectedIndex]?.textContent || '';
+                const selectedEpisodeText = episodeSelect.options[episodeSelect.selectedIndex]?.textContent || '';
+                const seasonNumber = selectedSeasonText.match(/Season (\d+)/)?.[1] || '?';
+                const episodeNumber = selectedEpisodeText.match(/E(\d+)/)?.[1] || '?';
+                watchButton.innerHTML = `<svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6 3v18l14-9z" /></svg> Watch S${seasonNumber} E${episodeNumber}`;
+            }
+
+            seasonSelect.addEventListener('change', () => updateEpisodes(seasonSelect.value));
+            episodeSelect.addEventListener('change', updateWatchButton);
+
+            // Initial load for the first season in the dropdown
+            if (seasonSelect.value) {
+                updateEpisodes(seasonSelect.value);
+            }
+        });
+    </script>
+</body>
+</html>
