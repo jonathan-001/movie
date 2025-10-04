@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HD Watch Stream UI Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --primary-blue: #3b82f6; /* Blue-500 for accents */
+            --dropdown-bg: #1a1a1a; /* Darker than header/body for contrast */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d121c; /* Very dark background */
+        }
+        /* Custom scrollbar to match dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        /* Style for the 'HD' badge */
+        .hd-badge {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 4px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 10;
+        }
+        /* Overlay for play button */
+        .play-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        .movie-card:hover .play-overlay {
+            opacity: 1;
+        }
+        /* Custom header background */
+        .header-bg {
+            background-color: #111827;
+        }
+
+        /* Dropdown specific styles */
+        .dropdown-menu {
+            background-color: var(--dropdown-bg);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            min-width: 600px; /* Adjust width to fit 4 columns */
+            left: 0; /* Align left edge of dropdown with the nav link */
+            padding: 1rem;
+            z-index: 50;
+        }
+        .dropdown-menu a {
+            padding: 6px 0;
+            transition: color 0.15s;
+            font-size: 0.9rem;
+        }
+        .dropdown-menu a:hover {
+            color: var(--primary-blue);
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen">
+
+    <div id="app">
+        <header class="header-bg shadow-lg sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-2xl font-bold text-white tracking-tight">HD<span class="text-blue-500">watch</span></span>
+                </div>
+
+                <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="{% url 'home' %}" class="text-blue-500 hover:text-white transition duration-200">HOME</a>
+                    
+                    <div class="relative group">
+                        <a href="#" class="text-gray-300 group-hover:text-blue-400 transition duration-200 uppercase">GENRE</a>
+                        <div class="dropdown-menu absolute hidden group-hover:block top-full mt-2 rounded-md border border-gray-700">
+                            <div class="grid grid-cols-4 gap-x-6 gap-y-2 text-white">
+                                <div class="flex flex-col">
+                                    <h3 class="font-semibold text-gray-500 text-xs uppercase mb-1">Genre</h3>
+                                    <a href="#">DRAMA</a>
+                                    <a href="#">ROMANCE</a>
+                                    <a href="#">ADVENTURE</a>
+                                    <a href="#">SCIENCE FICTION</a>
+                                    <a href="#">MUSIC</a>
+                                    <a href="#">ACTION & ADVE...</a>
+                                    <a href="#">TALK</a>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="#" class="mt-[1.3rem]">COMEDY</a>
+                                    <a href="#">HORROR</a>
+                                    <a href="#">MYSTERY</a>
+                                    <a href="#">TV MOVIE</a>
+                                    <a href="#">WAR</a>
+                                    <a href="#">REALITY</a>
+                                    <a href="#">SOAP</a>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="#" class="mt-[1.3rem]">THRILLER</a>
+                                    <a href="#">CRIME</a>
+                                    <a href="#">FANTASY</a>
+                                    <a href="#">ANIMATION</a>
+                                    <a href="#">WESTERN</a>
+                                    <a href="#">WAR & POLITICS</a>
+                                    <a href="#">NEWS</a>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="#" class="mt-[1.3rem]">ACTION</a>
+                                    <a href="#">DOCUMENTARY</a>
+                                    <a href="#">FAMILY</a>
+                                    <a href="#">HISTORY</a>
+                                    <a href="#">SCI-FI & FANTASY</a>
+                                    <a href="#">KIDS</a>
+                                    <a href="#">MUSICAL</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative group">
+                        <a href="#" class="text-gray-300 group-hover:text-blue-400 transition duration-200 uppercase">COUNTRY</a>
+                        <div class="dropdown-menu absolute hidden group-hover:block top-full mt-2 rounded-md border border-gray-700" style="min-width: 600px;">
+                            <div class="grid grid-cols-4 gap-x-6 gap-y-2 text-white">
+                                <div class="flex flex-col">
+                                    <h3 class="font-semibold text-gray-500 text-xs uppercase mb-1">Country</h3>
+                                    <a href="#">UNITED STATES ...</a>
+                                    <a href="#">GERMANY</a>
+                                    <a href="#">SPAIN</a>
+                                    <a href="#">CHINA</a>
+                                    <a href="#">DENMARK</a>
+                                    <a href="#">NETHERLANDS</a>
+                                    <a href="#">SOUTH AFRICA</a>
+                                    <a href="#">AUSTRIA</a>
+                                    <a href="#">CZECH REPUBLIC</a>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="#" class="mt-[1.3rem]">UNITED KINGDOM</a>
+                                    <a href="#">JAPAN</a>
+                                    <a href="#">AUSTRALIA</a>
+                                    <a href="#">BELGIUM</a>
+                                    <a href="#">IRELAND</a>
+                                    <a href="#">BRAZIL</a>
+                                    <a href="#">FINLAND</a>
+                                    <a href="#">THAILAND</a>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="#" class="mt-[1.3rem]">FRANCE</a>
+                                    <a href="#">ITALY</a>
+                                    <a href="#">HONG KONG</a>
+                                    <a href="#">SWEDEN</a>
+                                    <a href="#">POLAND</a>
+                                    <a href="#">NORWAY</a>
+                                    <a href="#">SWITZERLAND</a>
+                                    <a href="#">TURKEY</a>
+                                </div>
+                                <div class="flex flex-col">
+                                    <a href="#" class="mt-[1.3rem]">CANADA</a>
+                                    <a href="#">INDIA</a>
+                                    <a href="#">SOUTH KOREA</a>
+                                    <a href="#">MEXICO</a>
+                                    <a href="#">RUSSIA</a>
+                                    <a href="#">ARGENTINA</a>
+                                    <a href="#">NEW ZEALAND</a>
+                                    <a href="#">HUNGARY</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'movies' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">MOVIES</a>
+                    <a href="{% url 'tvseries' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">TV SHOWS</a>
+                    <a href="{% url 'anime' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">ANIME</a>
+                </nav>
+
+                <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">
+                    Login
+                </a>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section class="relative h-64 md:h-80 flex items-center justify-center rounded-xl my-8 overflow-hidden bg-cover bg-center" style="background-image: url('https://placehold.co/1280x320/0f172a/60a5fa?text=CINEMATIC+BACKGROUND');">
+                <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div class="relative z-10 w-full px-4 max-w-4xl">
+                    <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-6 text-center">
+                        Find Movies, TV shows and more
+                    </h1>
+                    <div class="relative">
+                        <input type="text" placeholder="Enter keywords..."
+                               class="w-full py-4 pl-12 pr-6 rounded-full text-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500 transition duration-300 shadow-xl">
+                        <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <div id="content-grid" class="py-4">
+                <section class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6">Trending</h2>
+                    
+                    <div class="flex space-x-4 mb-8 border-b border-gray-700">
+                        <button id="tab-movies" class="tab-button px-4 py-2 text-sm font-semibold border-b-2 border-blue-500 text-blue-500 transition duration-150">Movies</button>
+                        <button id="tab-tvshows" class="tab-button px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-blue-400 transition duration-150">TV Shows</button>
+                        <button id="tab-anime" class="tab-button px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-blue-400 transition duration-150">Anime</button>
+                    </div>
+
+                    <div id="trending-movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                        </div>
+                </section>
+
+                <section class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6">Anime</h2>
+                    <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                        </div>
+                </section>
+
+                <section class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6">Latest Movies</h2>
+                    <div id="latest-movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                        </div>
+                </section>
+                
+                <section class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6">Latest TV Shows</h2>
+                    <div id="latest-tvshows-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Data Definitions ---
+
+        const movieData = [
+            { title: "Superman", year: 2025, duration: "130m", type: "Movie", img: "https://placehold.co/200x300/e9a28c/444444?text=Superman", isPlayButton: false },
+            { title: "28 Years Later", year: 2025, duration: "115m", type: "Movie", img: "https://placehold.co/200x300/a23221/ffffff?text=28+Years+Later", isPlayButton: false },
+            { title: "The Conjuring: Last...", year: 2025, duration: "135m", type: "Movie", img: "https://placehold.co/200x300/323333/fffff?text=Conjuring+3", isPlayButton: false },
+            { title: "Thursday Murder Club", year: 2025, duration: "118m", type: "Movie", img: "https://placehold.co/200x300/999999/111111?text=T.M.C", isPlayButton: false },
+            { title: "Snake Eyes", year: 1998, duration: "98m", type: "Movie", img: "https://placehold.co/200x300/a8232c/ffffff?text=Snake+Eyes", isPlayButton: false },
+            { title: "F1", year: 2025, duration: "156m", type: "Movie", img: "https://placehold.co/200x300/aaaaaa/111111?text=F1+Movie", isPlayButton: false },
+            { title: "The Wrong Paris", year: 2025, duration: "107m", type: "Movie", img: "https://placehold.co/200x300/7a524e/ffffff?text=Wrong+Paris", isPlayButton: false },
+            { title: "Red Sonja", year: 2025, duration: "105m", type: "Movie", img: "https://placehold.co/200x300/e06b3f/111111?text=Red+Sonja", isPlayButton: false },
+            { title: "Highest 2 Lowest", year: 2025, duration: "105m", type: "Movie", img: "https://placehold.co/200x300/313437/ffffff?text=Highest+2+Lowest", isPlayButton: true },
+        ];
+
+        const tvShowData = [
+            { title: "The Walking Dead: Daryl Dixon", year: 2023, duration: "S1 EP6", type: "TV", img: "https://placehold.co/200x300/4a4a4a/ffffff?text=Daryl+Dixon", isPlayButton: false },
+            { title: "Tulsa King", year: 2022, duration: "S1 EP9", type: "TV", img: "https://placehold.co/200x300/3a4750/ffffff?text=Tulsa+King", isPlayButton: false },
+            { title: "South Park", year: 2025, duration: "S27 EP5", type: "TV", img: "https://placehold.co/200x300/7a976c/ffffff?text=South+Park", isPlayButton: false },
+            { title: "NCIS: Tony & Ziva", year: 2025, duration: "S1 EP5", type: "TV", img: "https://placehold.co/200x300/213b4c/ffffff?text=NCIS", isPlayButton: false },
+            { title: "Murder in a Small Town", year: 2025, duration: "S1 EP4", type: "TV", img: "https://placehold.co/200x300/3e4960/ffffff?text=Murder", isPlayButton: false },
+            { title: "Wayward", year: 2025, duration: "S1 EP8", type: "TV", img: "https://placehold.co/200x300/6b3a3c/ffffff?text=Wayward", isPlayButton: false },
+            { title: "Alice in Borderland", year: 2025, duration: "S3", type: "TV", img: "https://placehold.co/200x300/181818/ffffff?text=Alice", isPlayButton: false },
+        ];
+
+        const animeData = [
+            { title: "Jujutsu Kaisen", year: 2023, duration: "S2", type: "Anime", img: "https://placehold.co/200x300/8b0000/ffffff?text=Jujutsu+Kaisen", isPlayButton: false },
+            { title: "Attack on Titan", year: 2023, duration: "Final S.", type: "Anime", img: "https://placehold.co/200x300/b5651d/ffffff?text=AoT", isPlayButton: false },
+            { title: "Demon Slayer", year: 2024, duration: "S4", type: "Anime", img: "https://placehold.co/200x300/006400/ffffff?text=Demon+Slayer", isPlayButton: false },
+            { title: "One Piece", year: 2024, duration: "S21", type: "Anime", img: "https://placehold.co/200x300/4682b4/ffffff?text=One+Piece", isPlayButton: true },
+            { title: "Frieren: Beyond Journey's End", year: 2024, duration: "S1", type: "Anime", img: "https://placehold.co/200x300/add8e6/000000?text=Frieren", isPlayButton: false },
+            { title: "Solo Leveling", year: 2024, duration: "S1", type: "Anime", img: "https://placehold.co/200x300/483d8b/ffffff?text=Solo+Leveling", isPlayButton: false },
+            { title: "Kaiju No. 8", year: 2024, duration: "S1", type: "Anime", img: "https://placehold.co/200x300/2f4f4f/ffffff?text=Kaiju+No.+8", isPlayButton: false },
+        ];
+
+
+        /**
+         * Generates the HTML for a single movie/show card.
+         */
+        function createCardHtml(data) {
+            const playButtonOverlay = data.isPlayButton ? `
+                <div class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg">
+                    <svg class="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 3v18l14-9z" />
+                    </svg>
+                </div>
+            ` : '';
+
+            // Set tag color based on type
+            let tagBg = 'bg-gray-700/50';
+            if (data.type === 'Anime') {
+                tagBg = 'bg-red-800/50';
+            }
+
+            const metadata = `<span class="text-xs">${data.duration}</span><span class="text-xs font-medium ${tagBg} rounded-full px-2 py-0.5">${data.type}</span>`;
+
+            return `
+                <a href="#" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
+                    <div class="relative pb-[150%]"> <img src="${data.img}" alt="${data.title} Poster"
+                            onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';"
+                            class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
+                        <span class="hd-badge">HD</span>
+                        ${playButtonOverlay}
+                    </div>
+                    <div class="pt-2">
+                        <h3 class="text-sm font-semibold truncate text-white">${data.title}</h3>
+                        <div class="flex items-center space-x-2 text-gray-400 mt-0.5">
+                            <span class="text-xs">${data.year}</span>
+                            <span class="text-xs">•</span>
+                            ${metadata}
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        /**
+         * Populates a grid with movie/show cards.
+         */
+        function populateGrid(elementId, dataArray) {
+            const container = document.getElementById(elementId);
+            if (!container) return;
+
+            // Use a subset of data or repeat data to fill the space
+            const repeatedData = dataArray.concat(dataArray).slice(0, 14); 
+
+            container.innerHTML = repeatedData.map(createCardHtml).join('');
+        }
+
+        // --- Tab Logic ---
+
+        const tabMovies = document.getElementById('tab-movies');
+        const tabTVShows = document.getElementById('tab-tvshows');
+        const tabAnime = document.getElementById('tab-anime');
+        const tabs = [tabMovies, tabTVShows, tabAnime];
+        
+        function setActiveTab(activeTab) {
+            tabs.forEach(tab => {
+                if (tab === activeTab) {
+                    tab.classList.add('border-blue-500', 'text-blue-500');
+                    tab.classList.remove('border-transparent', 'text-gray-400', 'hover:text-blue-400');
+                } else {
+                    tab.classList.remove('border-blue-500', 'text-blue-500');
+                    tab.classList.add('border-transparent', 'text-gray-400', 'hover:text-blue-400');
+                }
+            });
+        }
+        
+        tabMovies.addEventListener('click', () => {
+            setActiveTab(tabMovies);
+            populateGrid('trending-movies-grid', movieData.slice(0, 7));
+        });
+
+        tabTVShows.addEventListener('click', () => {
+            setActiveTab(tabTVShows);
+            populateGrid('trending-movies-grid', tvShowData.slice(0, 7));
+        });
+
+        tabAnime.addEventListener('click', () => {
+            setActiveTab(tabAnime);
+            populateGrid('trending-movies-grid', animeData.slice(0, 7));
+        });
+
+        // --- Initialization ---
+
+        // 1. Populate all grids on load
+        populateGrid('trending-movies-grid', movieData);
+        populateGrid('anime-grid', animeData.slice(0, 14));
+        populateGrid('latest-movies-grid', movieData.slice(0, 14));
+        populateGrid('latest-tvshows-grid', tvShowData.slice(0, 14));
+
+        // 2. Ensure the correct tab is highlighted on load
+        setActiveTab(tabMovies);
+
+    </script>
+</body>
+</html>

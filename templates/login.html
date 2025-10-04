@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HD Watch - Login / Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root { --primary-blue: #3b82f6; --modal-bg: #1e1e1e; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0d121c; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .modal-input { 
+            background: transparent; 
+            border: none; 
+            border-bottom: 1px solid #444; 
+            color: #fff; 
+            padding: 10px 0; 
+            width: 100%; 
+            outline: none; 
+            transition: border-color 0.2s; 
+        }
+        .modal-input:focus { border-bottom-color: var(--primary-blue); }
+    </style>
+</head>
+<body class="text-gray-100">
+
+    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl w-full max-w-4xl max-h-[90vh] flex mx-4 my-8">
+        
+        <div class="hidden md:block w-1/2 bg-cover bg-center" style="background-image: url('https://placehold.co/800x600/ff4500/000000?text=Godzilla+vs+Kong');">
+        </div>
+
+        <div class="w-full md:w-1/2 p-8 relative bg-gray-900">
+            <!-- Close Button -->
+            <a href="{% url 'home' %}" title="Close and return to homepage" class="absolute top-4 right-4 text-gray-500 hover:text-white transition duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </a>
+
+            <!-- Login Form (Visible by default) -->
+            <div id="login-view">
+                <h2 class="text-3xl font-bold text-white mb-8 mt-4">Welcome back</h2>
+                <form class="space-y-6">
+                    <div>
+                        <label for="login-email" class="text-sm text-gray-400 block mb-1">Email address</label>
+                        <input type="email" id="login-email" placeholder="youremail@mail.com" class="modal-input" required>
+                    </div>
+                    <div>
+                        <label for="login-password" class="text-sm text-gray-400 block mb-1">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" class="modal-input" required>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold rounded-lg transition duration-200 mt-4">
+                        Login
+                    </button>
+                </form>
+                <div class="text-center text-sm mt-4">
+                    <a href="#" class="text-gray-400 hover:text-blue-400 transition">forgot password?</a>
+                </div>
+                <p class="text-sm text-center text-gray-400 mt-6">
+                    Don't have an account? 
+                    <!-- **UPDATED LINK ID** -->
+                    <a href="#" id="register-link" class="text-blue-500 font-semibold hover:text-blue-400 transition ml-1">Register</a>
+                </p>
+            </div>
+
+            <!-- Register Form (Hidden by default) -->
+            <div id="register-view" class="hidden">
+                <h2 class="text-3xl font-bold text-white mb-8 mt-4">Create an Account</h2>
+                <form class="space-y-4">
+                    <div>
+                        <label for="register-name" class="text-sm text-gray-400 block mb-1">Your name</label>
+                        <input type="text" id="register-name" placeholder="Name" class="modal-input" required>
+                    </div>
+                    <div>
+                        <label for="register-email" class="text-sm text-gray-400 block mb-1">Email address</label>
+                        <input type="email" id="register-email" placeholder="name@email.com" class="modal-input" required>
+                    </div>
+                    <div>
+                        <label for="register-password" class="text-sm text-gray-400 block mb-1">Password</label>
+                        <input type="password" id="register-password" placeholder="Password" class="modal-input" required>
+                    </div>
+                    <div>
+                        <label for="register-confirm-password" class="text-sm text-gray-400 block mb-1">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" placeholder="Confirm Password" class="modal-input" required>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-bold rounded-lg transition duration-200 mt-6">
+                        Register
+                    </button>
+                </form>
+                <p class="text-sm text-center text-gray-400 mt-6">
+                    Have an account? 
+                    <!-- **UPDATED LINK ID** -->
+                    <a href="#" id="login-link" class="text-blue-500 font-semibold hover:text-blue-400 transition ml-1">Login now</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- This line is essential for loading the logic and connecting the functions -->
+    <script src="{% static 'js/auth.js' %}?v=1.1"></script>
+</body>
+</html>
