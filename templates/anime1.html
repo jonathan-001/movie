@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HD Watch - Movies</title>
+    <title>HD Watch - Anime</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -34,15 +34,11 @@
                 </div>
                 <nav class="hidden md:flex space-x-8 text-sm font-medium">
                     <a href="{% url 'home' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">HOME</a>
-                    <div class="relative group"><a href="#" class="text-gray-300 group-hover:text-blue-400 transition duration-200 uppercase">GENRE</a>
-                        <div class="dropdown-menu absolute hidden group-hover:block top-full mt-2 rounded-md border border-gray-700">...</div>
-                    </div>
-                    <div class="relative group"><a href="#" class="text-gray-300 group-hover:text-blue-400 transition duration-200 uppercase">COUNTRY</a>
-                        <div class="dropdown-menu absolute hidden group-hover:block top-full mt-2 rounded-md border border-gray-700">...</div>
-                    </div>
-                    <a href="{% url 'movies:movies' %}" class="text-blue-500 hover:text-white transition duration-200">MOVIES</a>
+                    <div class="relative group"><a href="#" class="text-gray-300 group-hover:text-blue-400 transition duration-200 uppercase">GENRE</a><div class="dropdown-menu absolute hidden group-hover:block top-full mt-2 rounded-md border border-gray-700">...</div></div>
+                    <div class="relative group"><a href="#" class="text-gray-300 group-hover:text-blue-400 transition duration-200 uppercase">COUNTRY</a><div class="dropdown-menu absolute hidden group-hover:block top-full mt-2 rounded-md border border-gray-700">...</div></div>
+                    <a href="{% url 'movies:movies' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">MOVIES</a>
                     <a href="{% url 'tvseries:tvseries' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">TV SHOWS</a>
-                    <a href="{% url 'anime:anime' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">ANIME</a>
+                    <a href="{% url 'anime' %}" class="text-blue-500 hover:text-white transition duration-200">ANIME</a>
                 </nav>
                 <div class="relative hidden lg:block"><input type="text" placeholder="Enter keywords..." class="w-48 py-2 pl-4 pr-10 rounded-full text-sm text-gray-900 focus:outline-none bg-gray-300"><svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
                 <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Login</a>
@@ -50,31 +46,30 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h1 class="text-3xl font-bold mb-8">Popular Movies</h1>
+            <h1 class="text-3xl font-bold mb-8 text-red-400">Popular Anime</h1>
 
             <div class="flex flex-wrap items-center justify-between bg-gray-800 p-4 mb-8 rounded-lg">
                 <div class="flex flex-wrap gap-4 items-center text-sm text-gray-300">
                     <div class="flex flex-col">
                         <span class="text-xs mb-1">Type</span>
                         <select class="filter-select border-2">
+                            <option>Anime</option>
                             <option>Movies</option>
-                            <option>TV Series</option>
                         </select>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-xs mb-1">Genre</span>
                         <select class="filter-select border-2">
                             <option>All</option>
-                            <option>Action</option>
-                            <option>Comedy</option>
+                            <option>Shonen</option>
+                            <option>Isekai</option>
                         </select>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-xs mb-1">Country</span>
                         <select class="filter-select border-2">
-                            <option>All</option>
+                            <option>Japan</option>
                             <option>USA</option>
-                            <option>UK</option>
                         </select>
                     </div>
                     <div class="flex flex-col">
@@ -100,47 +95,54 @@
                 </button>
             </div>
             
-            <div id="movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
-                {% for movie in movies %}
-                <a href="{% if movie.imdb_id %}{% url 'movies:movie_detail' movie.imdb_id %}{% else %}#{% endif %}" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
-                    <div class="relative pb-[150%]">
-                        {% if movie.poster_api_url %}
-                        <img src="{{ movie.poster_api_url }}" alt="{{ movie.title }} Poster"
-                             onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';"
-                             class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
-                        {% else %}
-                        <img src="https://placehold.co/200x300/444444/ffffff?text=No+Image" alt="{{ movie.title }} Poster" class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
-                        {% endif %}
-                        <span class="hd-badge">HD</span>
-                    </div>
-                    <div class="pt-2">
-                        <h3 class="text-sm font-semibold truncate text-white">{{ movie.title }}</h3>
-                        <div class="flex items-center space-x-2 text-gray-400 mt-0.5">
-                            <span class="text-xs font-medium bg-gray-700/50 rounded-full px-2 py-0.5">Movie</span>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
+            <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                </div>
 
-            <!-- Pagination Controls -->
-            <div class="flex justify-center items-center space-x-1 sm:space-x-3 mt-12 mb-8 text-base sm:text-lg font-semibold">
-                {% if movies.has_previous %}
-                    <a href="?page=1" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">« First</a>
-                    <a href="?page={{ movies.previous_page_number }}" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">‹ Previous</a>
-                {% endif %}
-
-                <span class="text-gray-400 p-2">
-                    Page {{ movies.number }} of {{ movies.paginator.num_pages }}
-                </span>
-
-                {% if movies.has_next %}
-                    <a href="?page={{ movies.next_page_number }}" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">Next ›</a>
-                    <a href="?page={{ movies.paginator.num_pages }}" class="text-gray-400 hover:text-blue-500 p-2 rounded-full">Last »</a>
-                {% endif %}
+            <div class="flex justify-center items-center space-x-3 mt-12 mb-8 text-lg font-semibold">
+                <span class="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-full">1</span>
+                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">2</a>
+                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">3</a>
+                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">4</a>
+                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">5</a>
+                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">6</a>
+                <a href="#" class="text-gray-400 hover:text-blue-500 w-8 h-8 flex items-center justify-center rounded-full">7</a>
+                <a href="#" class="text-gray-400 hover:text-blue-500 text-2xl">»</a>
             </div>
         </main>
     </div>
 
+    <script>
+        const animeData = [
+            { title: "Jujutsu Kaisen", duration: "S2 EP 12", type: "Anime", img: "https://placehold.co/200x300/8b0000/ffffff?text=Jujutsu+Kaisen" },
+            { title: "Attack on Titan", duration: "Final S.", type: "Anime", img: "https://placehold.co/200x300/b5651d/ffffff?text=AoT" },
+            { title: "Demon Slayer", duration: "S4 EP 7", type: "Anime", img: "https://placehold.co/200x300/006400/ffffff?text=Demon+Slayer" },
+            { title: "One Piece", duration: "S21 EP 1", type: "Anime", img: "https://placehold.co/200x300/4682b4/ffffff?text=One+Piece" },
+            { title: "Frieren: Beyond Journey's End", duration: "S1 EP 28", type: "Anime", img: "https://placehold.co/200x300/add8e6/000000?text=Frieren" },
+            { title: "Solo Leveling", duration: "S1 EP 12", type: "Anime", img: "https://placehold.co/200x300/483d8b/ffffff?text=Solo+Leveling" },
+            { title: "Kaiju No. 8", duration: "S1 EP 10", type: "Anime", img: "https://placehold.co/200x300/2f4f4f/ffffff?text=Kaiju+No.+8" },
+            { title: "Chainsaw Man", duration: "S1 EP 12", type: "Anime", img: "https://placehold.co/200x300/f8a300/ffffff?text=Chainsaw+Man" },
+        ];
+        
+        // Re-using the generic card rendering functions
+        function createCardHtml(data) {
+            const playButtonOverlay = data.isPlayButton ? `<div class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg"><svg class="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 3v18l14-9z" /></svg></div>` : '';
+            const tagBg = 'bg-red-800/50'; // Always red for Anime in this view
+            const metadata = `<span class="text-xs">${data.duration}</span><span class="text-xs font-medium ${tagBg} rounded-full px-2 py-0.5">${data.type}</span>`;
+            return `<a href="#" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10"><div class="relative pb-[150%]"><img src="${data.img}" alt="${data.title} Poster" onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';" class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300"><span class="hd-badge">HD</span>${playButtonOverlay}</div><div class="pt-2"><h3 class="text-sm font-semibold truncate text-white">${data.title}</h3><div class="flex items-center space-x-2 text-gray-400 mt-0.5"><span class="text-xs">TV</span><span class="text-xs">•</span>${metadata}</div></div></a>`;
+        }
+
+        function populateGrid(elementId, dataArray) {
+            const container = document.getElementById(elementId);
+            if (container) {
+                container.innerHTML = dataArray.map(createCardHtml).join('');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate the Anime grid with sample data (repeating data to fill two rows)
+            const fullAnimeData = [...animeData, ...animeData.slice(0, 7)];
+            populateGrid('anime-grid', fullAnimeData);
+        });
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ movie.title }} - Detail</title>
+    <title>{{ api.Title|default:local_movie.title }} - Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -95,8 +95,8 @@
                 </div>
                 <nav class="hidden sm:flex space-x-6 text-sm font-medium">
                     <a href="{% url 'home' %}" class="text-white hover:text-blue-400 transition">HOME</a>
-                    <a href="movies.html" class="text-white hover:text-blue-400 transition">MOVIES</a>
-                    <a href="tv-series.html" class="text-white hover:text-blue-400 transition">TV SERIES</a>
+                    <a href="{% url 'movies:movies' %}" class="text-white hover:text-blue-400 transition">MOVIES</a>
+                    <a href="{% url 'tvseries:tvseries' %}" class="text-white hover:text-blue-400 transition">TV SERIES</a>
                     <a href="#" class="text-white hover:text-blue-400 transition">TOP IMDB</a>
                 </nav>
                 <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Login</a>
@@ -104,7 +104,7 @@
         </header>
 
         <!-- Hero Section with Blurred Background -->
-        <div class="hero-background" style="background-image: url('{% if movie.poster_image %}{{ movie.poster_image.url }}{% else %}https://placehold.co/1920x300/101010/FFFFFF?text=No+Background{% endif %}');">
+        <div class="hero-background" style="background-image: url('{% if api.Poster and api.Poster != 'N/A' %}{{ api.Poster }}{% elif local_movie.poster_image %}{{ local_movie.poster_image.url }}{% else %}https://placehold.co/1920x300/101010/FFFFFF?text=No+Background{% endif %}');">
         </div>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,13 +113,13 @@
                 
                 <!-- Left: Poster Image -->
                 <div class="relative w-full md:w-64 flex-shrink-0 -mt-24 md:-mt-40">
-                    {% if movie.poster_image %}
-                    <img src="{{ movie.poster_image.url }}" 
-                         alt="{{ movie.title }} Poster" 
+                    {% if api.Poster and api.Poster != 'N/A' %}
+                    <img src="{{ api.Poster }}" 
+                         alt="{{ api.Title }} Poster" 
                          class="w-full h-auto rounded-lg shadow-xl border-4 border-white/10" />
                     {% else %}
-                    <img src="https://placehold.co/400x600/444444/ffffff?text=No+Image" 
-                         alt="{{ movie.title }} Poster" 
+                    <img src="{% if local_movie.poster_image %}{{ local_movie.poster_image.url }}{% else %}https://placehold.co/400x600/444444/ffffff?text=No+Image{% endif %}" 
+                         alt="{{ local_movie.title }} Poster" 
                          class="w-full h-auto rounded-lg shadow-xl border-4 border-white/10" />
                     {% endif %}
                     <span class="hd-badge">HD</span>
@@ -128,18 +128,18 @@
                 <!-- Right: Content -->
                 <div class="flex-grow pt-0 md:pt-4">
                     <!-- Back Button -->
-                    <a href="{% url 'movies' %}" class="inline-flex items-center text-sm font-medium text-gray-400 hover:text-blue-500 transition mb-4 p-2 bg-gray-700/50 rounded-lg">
+                    <a href="{% url 'movies:movies' %}" class="inline-flex items-center text-sm font-medium text-gray-400 hover:text-blue-500 transition mb-4 p-2 bg-gray-700/50 rounded-lg">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                         Movies
                     </a>
                     
                     <!-- Title -->
-                    <h1 class="text-4xl font-extrabold text-white mb-6">{{ movie.title }}</h1>
+                    <h1 class="text-4xl font-extrabold text-white mb-6">{{ api.Title|default:local_movie.title }}</h1>
 
                     <!-- Action Buttons and Rating -->
                     <div class="flex flex-wrap items-center space-x-4 mb-8">
-                        <a href="{{ movie.watch_link }}" 
-                           class="flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg {% if movie.watch_link %}bg-cyan-400 hover:bg-cyan-500 text-gray-900{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
+                        <a href="{{ local_movie.watch_link }}" 
+                           class="flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg {% if local_movie.watch_link %}bg-cyan-400 hover:bg-cyan-500 text-gray-900{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
                            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6 3v18l14-9z" /></svg>
                            Watch now
                         </a>
@@ -147,8 +147,8 @@
                             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                             Watch List
                         </button>
-                        <a href="{{ movie.download_link }}"
-                           class="flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg {% if movie.download_link %}bg-blue-600 hover:bg-blue-700 text-white{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
+                        <a href="{{ local_movie.download_link }}"
+                           class="flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg {% if local_movie.download_link %}bg-blue-600 hover:bg-blue-700 text-white{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                            Download
                         </a>
@@ -162,14 +162,14 @@
                                 <svg class="w-5 h-5 text-gray-500 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
                                 <svg class="w-5 h-5 text-gray-500 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.487 7.21l6.56-.955L10 1l2.953 5.255 6.56.955-4.758 4.335 1.123 6.545L10 15z"/></svg>
                             </div>
-                            <span class="text-sm font-semibold text-white">{{ movie.imdb_rating|default:"N/A" }} / 10</span>
+                            <span class="text-sm font-semibold text-white">{{ api.imdbRating|default:"N/A" }} / 10</span>
                         </div>
                     </div>
 
                     <!-- Overview -->
                     <h3 class="text-xl font-bold mb-3 text-white border-b border-gray-700 pb-2">Overview</h3>
                     <p class="text-gray-300 leading-relaxed mb-6">
-                        {{ movie.overview|default:"No overview available." }}
+                        {{ api.Plot|default:"No overview available." }}
                     </p>
                     <button id="read-full" class="text-blue-500 hover:text-blue-400 text-sm font-semibold mb-6 transition">
                         + read full
@@ -179,31 +179,31 @@
                     <div class="space-y-2 text-sm text-white">
                         <div class="metadata-row">
                             <span class="metadata-label">Casts</span>
-                            <span class="metadata-value">{{ movie.cast_members|default:"N/A" }}</span>
+                            <span class="metadata-value">{{ api.Actors|default:"N/A" }}</span>
                         </div>
                         <div class="metadata-row">
                             <span class="metadata-label">Genres</span>
-                            <span class="metadata-value">{{ movie.genres|default:"N/A" }}</span>
+                            <span class="metadata-value">{{ api.Genre|default:"N/A" }}</span>
                         </div>
                         <div class="metadata-row">
                             <span class="metadata-label">Duration</span>
-                            <span class="metadata-value">{{ movie.duration|default:"N/A" }} min</span>
+                            <span class="metadata-value">{{ api.Runtime|default:"N/A" }}</span>
                         </div>
                         <div class="metadata-row">
                             <span class="metadata-label">Country</span>
-                            <span class="metadata-value">{{ movie.country|default:"N/A" }}</span>
+                            <span class="metadata-value">{{ api.Country|default:"N/A" }}</span>
                         </div>
                         <div class="metadata-row">
                             <span class="metadata-label">IMDb</span>
-                            <span class="metadata-value text-yellow-400">{{ movie.imdb_rating|default:"N/A" }}</span>
+                            <span class="metadata-value text-yellow-400">{{ api.imdbRating|default:"N/A" }}</span>
                         </div>
                         <div class="metadata-row">
                             <span class="metadata-label">Release</span>
-                            <span class="metadata-value">{{ movie.release_date|date:"Y-m-d"|default:"N/A" }}</span>
+                            <span class="metadata-value">{{ api.Released|default:"N/A" }}</span>
                         </div>
                         <div class="metadata-row">
                             <span class="metadata-label">Production</span>
-                            <span class="metadata-value">{{ movie.production|default:"N/A" }}</span>
+                            <span class="metadata-value">{{ api.Production|default:"N/A" }}</span>
                         </div>
                     </div>
                 </div>

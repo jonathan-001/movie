@@ -186,9 +186,9 @@
                         </div>
                     </div>
 
-                    <a href="{% url 'movies' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">MOVIES</a>
-                    <a href="{% url 'tvseries' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">TV SHOWS</a>
-                    <a href="{% url 'anime' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">ANIME</a>
+                    <a href="{% url 'movies:movies' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">MOVIES</a>
+                    <a href="{% url 'tvseries:tvseries' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">TV SHOWS</a>
+                    <a href="{% url 'anime:anime' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">ANIME</a>
                 </nav>
 
                 <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">
@@ -204,13 +204,15 @@
                     <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-6 text-center">
                         Find Movies, TV shows and more
                     </h1>
-                    <div class="relative">
-                        <input type="text" placeholder="Enter keywords..."
+                    <form action="{% url 'movies:search' %}" method="GET" class="relative">
+                        <input type="text" name="q" placeholder="Enter keywords..."
                                class="w-full py-4 pl-12 pr-6 rounded-full text-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500 transition duration-300 shadow-xl">
                         <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                    </div>
+                        <!-- You can add a hidden submit button or rely on the user pressing Enter -->
+                        <button type="submit" class="hidden">Search</button>
+                    </form>
                 </div>
             </section>
 
@@ -225,24 +227,36 @@
                     </div>
 
                     <div id="trending-movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
-                        </div>
-                </section>
-
-                <section class="mb-12">
-                    <h2 class="text-3xl font-bold mb-6">Anime</h2>
-                    <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
-                        </div>
+                        {% for movie in trending_movies %}
+                            {% include 'partials/movie_card.html' with item=movie content_type='Movie' %}
+                        {% endfor %}
+                    </div>
                 </section>
 
                 <section class="mb-12">
                     <h2 class="text-3xl font-bold mb-6">Latest Movies</h2>
                     <div id="latest-movies-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
-                        </div>
+                        {% for movie in latest_movies %}
+                            {% include 'partials/movie_card.html' with item=movie content_type='Movie' %}
+                        {% endfor %}
+                    </div>
                 </section>
                 
                 <section class="mb-12">
                     <h2 class="text-3xl font-bold mb-6">Latest TV Shows</h2>
                     <div id="latest-tvshows-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                        {% for series in latest_tvshows %}
+                            {% include 'partials/series_card.html' with item=series %}
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="mb-12">
+                    <h2 class="text-3xl font-bold mb-6">Anime</h2>
+                    <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                        {% for anime in anime_list %}
+                            {% include 'partials/anime_card.html' with item=anime %}
+                        {% endfor %}
                     </div>
                 </section>
 
@@ -251,94 +265,6 @@
     </div>
 
     <script>
-        // --- Data Definitions ---
-
-        const movieData = [
-            { title: "Superman", year: 2025, duration: "130m", type: "Movie", img: "https://placehold.co/200x300/e9a28c/444444?text=Superman", isPlayButton: false },
-            { title: "28 Years Later", year: 2025, duration: "115m", type: "Movie", img: "https://placehold.co/200x300/a23221/ffffff?text=28+Years+Later", isPlayButton: false },
-            { title: "The Conjuring: Last...", year: 2025, duration: "135m", type: "Movie", img: "https://placehold.co/200x300/323333/fffff?text=Conjuring+3", isPlayButton: false },
-            { title: "Thursday Murder Club", year: 2025, duration: "118m", type: "Movie", img: "https://placehold.co/200x300/999999/111111?text=T.M.C", isPlayButton: false },
-            { title: "Snake Eyes", year: 1998, duration: "98m", type: "Movie", img: "https://placehold.co/200x300/a8232c/ffffff?text=Snake+Eyes", isPlayButton: false },
-            { title: "F1", year: 2025, duration: "156m", type: "Movie", img: "https://placehold.co/200x300/aaaaaa/111111?text=F1+Movie", isPlayButton: false },
-            { title: "The Wrong Paris", year: 2025, duration: "107m", type: "Movie", img: "https://placehold.co/200x300/7a524e/ffffff?text=Wrong+Paris", isPlayButton: false },
-            { title: "Red Sonja", year: 2025, duration: "105m", type: "Movie", img: "https://placehold.co/200x300/e06b3f/111111?text=Red+Sonja", isPlayButton: false },
-            { title: "Highest 2 Lowest", year: 2025, duration: "105m", type: "Movie", img: "https://placehold.co/200x300/313437/ffffff?text=Highest+2+Lowest", isPlayButton: true },
-        ];
-
-        const tvShowData = [
-            { title: "The Walking Dead: Daryl Dixon", year: 2023, duration: "S1 EP6", type: "TV", img: "https://placehold.co/200x300/4a4a4a/ffffff?text=Daryl+Dixon", isPlayButton: false },
-            { title: "Tulsa King", year: 2022, duration: "S1 EP9", type: "TV", img: "https://placehold.co/200x300/3a4750/ffffff?text=Tulsa+King", isPlayButton: false },
-            { title: "South Park", year: 2025, duration: "S27 EP5", type: "TV", img: "https://placehold.co/200x300/7a976c/ffffff?text=South+Park", isPlayButton: false },
-            { title: "NCIS: Tony & Ziva", year: 2025, duration: "S1 EP5", type: "TV", img: "https://placehold.co/200x300/213b4c/ffffff?text=NCIS", isPlayButton: false },
-            { title: "Murder in a Small Town", year: 2025, duration: "S1 EP4", type: "TV", img: "https://placehold.co/200x300/3e4960/ffffff?text=Murder", isPlayButton: false },
-            { title: "Wayward", year: 2025, duration: "S1 EP8", type: "TV", img: "https://placehold.co/200x300/6b3a3c/ffffff?text=Wayward", isPlayButton: false },
-            { title: "Alice in Borderland", year: 2025, duration: "S3", type: "TV", img: "https://placehold.co/200x300/181818/ffffff?text=Alice", isPlayButton: false },
-        ];
-
-        const animeData = [
-            { title: "Jujutsu Kaisen", year: 2023, duration: "S2", type: "Anime", img: "https://placehold.co/200x300/8b0000/ffffff?text=Jujutsu+Kaisen", isPlayButton: false },
-            { title: "Attack on Titan", year: 2023, duration: "Final S.", type: "Anime", img: "https://placehold.co/200x300/b5651d/ffffff?text=AoT", isPlayButton: false },
-            { title: "Demon Slayer", year: 2024, duration: "S4", type: "Anime", img: "https://placehold.co/200x300/006400/ffffff?text=Demon+Slayer", isPlayButton: false },
-            { title: "One Piece", year: 2024, duration: "S21", type: "Anime", img: "https://placehold.co/200x300/4682b4/ffffff?text=One+Piece", isPlayButton: true },
-            { title: "Frieren: Beyond Journey's End", year: 2024, duration: "S1", type: "Anime", img: "https://placehold.co/200x300/add8e6/000000?text=Frieren", isPlayButton: false },
-            { title: "Solo Leveling", year: 2024, duration: "S1", type: "Anime", img: "https://placehold.co/200x300/483d8b/ffffff?text=Solo+Leveling", isPlayButton: false },
-            { title: "Kaiju No. 8", year: 2024, duration: "S1", type: "Anime", img: "https://placehold.co/200x300/2f4f4f/ffffff?text=Kaiju+No.+8", isPlayButton: false },
-        ];
-
-
-        /**
-         * Generates the HTML for a single movie/show card.
-         */
-        function createCardHtml(data) {
-            const playButtonOverlay = data.isPlayButton ? `
-                <div class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg">
-                    <svg class="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 3v18l14-9z" />
-                    </svg>
-                </div>
-            ` : '';
-
-            // Set tag color based on type
-            let tagBg = 'bg-gray-700/50';
-            if (data.type === 'Anime') {
-                tagBg = 'bg-red-800/50';
-            }
-
-            const metadata = `<span class="text-xs">${data.duration}</span><span class="text-xs font-medium ${tagBg} rounded-full px-2 py-0.5">${data.type}</span>`;
-
-            return `
-                <a href="#" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
-                    <div class="relative pb-[150%]"> <img src="${data.img}" alt="${data.title} Poster"
-                            onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';"
-                            class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
-                        <span class="hd-badge">HD</span>
-                        ${playButtonOverlay}
-                    </div>
-                    <div class="pt-2">
-                        <h3 class="text-sm font-semibold truncate text-white">${data.title}</h3>
-                        <div class="flex items-center space-x-2 text-gray-400 mt-0.5">
-                            <span class="text-xs">${data.year}</span>
-                            <span class="text-xs">•</span>
-                            ${metadata}
-                        </div>
-                    </div>
-                </a>
-            `;
-        }
-
-        /**
-         * Populates a grid with movie/show cards.
-         */
-        function populateGrid(elementId, dataArray) {
-            const container = document.getElementById(elementId);
-            if (!container) return;
-
-            // Use a subset of data or repeat data to fill the space
-            const repeatedData = dataArray.concat(dataArray).slice(0, 14); 
-
-            container.innerHTML = repeatedData.map(createCardHtml).join('');
-        }
-
         // --- Tab Logic ---
 
         const tabMovies = document.getElementById('tab-movies');
@@ -346,7 +272,7 @@
         const tabAnime = document.getElementById('tab-anime');
         const tabs = [tabMovies, tabTVShows, tabAnime];
         
-        function setActiveTab(activeTab) {
+        function setActiveTab(activeTab, contentId) {
             tabs.forEach(tab => {
                 if (tab === activeTab) {
                     tab.classList.add('border-blue-500', 'text-blue-500');
@@ -356,33 +282,32 @@
                     tab.classList.add('border-transparent', 'text-gray-400', 'hover:text-blue-400');
                 }
             });
+            // This part is now handled by Django, but you could use it for dynamic JS loading if needed.
         }
         
         tabMovies.addEventListener('click', () => {
-            setActiveTab(tabMovies);
-            populateGrid('trending-movies-grid', movieData.slice(0, 7));
+            // In a full JS app, you would fetch and render movie data here.
+            // For now, it's just a visual switch.
+            setActiveTab(tabMovies, 'trending-movies-grid');
         });
 
         tabTVShows.addEventListener('click', () => {
-            setActiveTab(tabTVShows);
-            populateGrid('trending-movies-grid', tvShowData.slice(0, 7));
+            // In a full JS app, you would fetch and render TV show data here.
+            setActiveTab(tabTVShows, 'trending-tv-grid');
         });
 
         tabAnime.addEventListener('click', () => {
-            setActiveTab(tabAnime);
-            populateGrid('trending-movies-grid', animeData.slice(0, 7));
+            // In a full JS app, you would fetch and render anime data here.
+            setActiveTab(tabAnime, 'trending-anime-grid');
         });
 
         // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // The grids are now populated by Django server-side rendering.
+            // This script only handles the tab visual state.
+            setActiveTab(tabMovies);
+        });
 
-        // 1. Populate all grids on load
-        populateGrid('trending-movies-grid', movieData);
-        populateGrid('anime-grid', animeData.slice(0, 14));
-        populateGrid('latest-movies-grid', movieData.slice(0, 14));
-        populateGrid('latest-tvshows-grid', tvShowData.slice(0, 14));
-
-        // 2. Ensure the correct tab is highlighted on load
-        setActiveTab(tabMovies);
 
     </script>
 </body>

@@ -1,0 +1,22 @@
+{# This partial expects an 'item' variable which is an Anime object #}
+<a href="{% if item.mal_id %}{% url 'anime:anime_detail' item.mal_id %}{% else %}#{% endif %}" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
+    <div class="relative pb-[150%]">
+        {% if item.poster_api_url %}
+        <img src="{{ item.poster_api_url }}" alt="{{ item.title }} Poster"
+             onerror="this.onerror=null; this.src='https://placehold.co/200x300/444444/ffffff?text=Poster+Unavailable';"
+             class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
+        {% elif item.poster %}
+        <img src="{{ item.poster.url }}" alt="{{ item.title }} Poster"
+             class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
+        {% else %}
+        <img src="https://placehold.co/200x300/444444/ffffff?text=No+Image" alt="{{ item.title }} Poster" class="absolute top-0 left-0 w-full h-full object-cover rounded-lg transform group-hover:opacity-90 transition duration-300">
+        {% endif %}
+        <span class="hd-badge">HD</span>
+    </div>
+    <div class="pt-2">
+        <h3 class="text-sm font-semibold truncate text-white">{{ item.title }}</h3>
+        <div class="flex items-center space-x-2 text-gray-400 mt-0.5">
+            <span class="text-xs font-medium bg-gray-700/50 rounded-full px-2 py-0.5">Anime</span>
+        </div>
+    </div>
+</a>

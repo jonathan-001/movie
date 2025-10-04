@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results for "{{ query }}"</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root { --primary-blue: #3b82f6; }
+        body { font-family: 'Inter', sans-serif; background-color: #0d121c; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        .hd-badge { background-color: var(--primary-blue); color: white; padding: 2px 6px; font-size: 0.75rem; font-weight: 700; border-radius: 4px; position: absolute; top: 8px; right: 8px; z-index: 10; }
+        .header-bg { background-color: #111827; }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen">
+
+    <div id="app">
+        <header class="header-bg shadow-lg sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-2xl font-bold text-white tracking-tight">HD<span class="text-blue-500">watch</span></span>
+                </div>
+                <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="{% url 'home' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">HOME</a>
+                    <a href="{% url 'movies:movies' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">MOVIES</a>
+                    <a href="{% url 'tvseries:tvseries' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">TV SHOWS</a>
+                    <a href="{% url 'anime:anime' %}" class="text-gray-300 hover:text-blue-400 transition duration-200">ANIME</a>
+                </nav>
+                <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">
+                    Login
+                </a>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 class="text-3xl font-bold mb-2">Search Results</h1>
+            <p class="text-gray-400 mb-8">
+                Found {{ results_count }} result{{ results_count|pluralize }} for "<span class="text-white font-semibold">{{ query }}</span>"
+            </p>
+
+            {% if results %}
+                <div id="results-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
+                    {% for movie in results %}
+                        {% include 'partials/movie_card.html' with item=movie content_type='Movie' %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-16 bg-gray-800/50 rounded-lg">
+                    <h2 class="text-2xl font-semibold text-white">No movies found</h2>
+                    <p class="text-gray-400 mt-2">Try searching for something else.</p>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+</body>
+</html>

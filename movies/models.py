@@ -4,47 +4,20 @@ from django.db import models
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
-    
-    release_date = models.DateField(null=True, blank=True)
-    
-    duration = models.IntegerField(
+    imdb_id = models.CharField(
+        max_length=20, 
+        unique=True, 
         null=True, 
-        blank=True
-    )
+        blank=True, 
+        help_text="IMDb ID (e.g., tt1375666)")
     
-    country = models.CharField(
-        max_length=100, 
+    poster_api_url = models.URLField(
+        max_length=500, 
         null=True, 
-        blank=True
-    )
-    
-    overview = models.TextField()
-    
-    genres = models.CharField(
-        max_length=255
-    )
-    
-    cast_members = models.TextField()
-    
-    production = models.TextField(
-        null=True, 
-        blank=True
-    )
-    
-    imdb_rating = models.DecimalField(
-        max_digits=3, 
-        decimal_places=1, 
-        null=True, 
-        blank=True
-    )
-    
-    poster_image = models.ImageField(
-        upload_to='posters/', 
-        null=True, 
-        blank=True
+        blank=True,
+        help_text="URL for the poster from OMDb API"
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
     download_link = models.URLField(max_length=500, null=True, blank=True)
     watch_link = models.URLField(max_length=500, null=True, blank=True)
 
@@ -53,5 +26,5 @@ class Movie(models.Model):
         return self.title
     
     class Meta:
-        ordering = ['-release_date', 'title']
+        ordering = ['title']
         verbose_name_plural = "Movies"

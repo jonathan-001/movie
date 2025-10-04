@@ -1,0 +1,11 @@
+<h1>{{ title }} ({{ year }})</h1>
+    <p><strong>IMDb Rating:</strong> {{ imdb_rating }}</p>
+
+    {% if poster_url and poster_url != 'N/A' %}
+        <img src="{{ poster_url }}" alt="Poster for {{ title }}" style="width: 300px;">
+    {% else %}
+        <p>No poster available.</p>
+    {% endif %}
+
+    <h2>Plot</h2>
+    <p>{{ plot }}</p>

@@ -9,11 +9,15 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -22,10 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-1^!^p8s@xjge$0780dpg2p3p605+)i6(ya&4=4mo_$(wv9h8w4'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# OMDb API Key loaded from .env file
+OMDB_API_KEY = os.getenv('OMDB_API_KEY')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False
+DEBUG = True
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
