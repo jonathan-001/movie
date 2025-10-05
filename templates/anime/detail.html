@@ -28,6 +28,17 @@
         .metadata-row { display: flex; margin-bottom: 8px; }
         .metadata-label { width: 120px; font-weight: 600; color: #9ca3af; flex-shrink: 0; }
         .metadata-value { flex-grow: 1; }
+        /* Dropdown/Select styling */
+        .watch-select {
+            background-color: #374151; /* Gray-700 */
+            border: 1px solid #4b5563; /* Gray-600 */
+            color: #e5e7eb;
+            padding: 10px 14px;
+            border-radius: 8px;
+            appearance: none; /* Remove default arrow */
+            cursor: pointer;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="text-gray-100">
@@ -71,7 +82,13 @@
                         Anime
                     </a>
                     
-                    <h1 class="text-4xl font-extrabold text-white mb-6">{{ api.title|default:local_anime.title }}</h1>
+                    <h1 class="text-4xl font-extrabold text-white mb-6">
+                        {% if api.title_english %}
+                            {{ api.title_english }}
+                        {% else %}
+                            {{ api.title|default:local_anime.title }}
+                        {% endif %}
+                    </h1>
 
                     <div class="flex flex-wrap items-center space-x-4 mb-8">
                         {% if local_anime.trailer_link or api.trailer.url %}
@@ -86,12 +103,39 @@
                             <span class="text-sm font-semibold text-white">{{ api.score|default:"N/A" }} / 10</span>
                         </div>
                     </div>
-                    <button><a href="https://kaido.to/watch/death-note-60?ep=1464" class="inline-flex items-center">download</a></button>
+
+                    {% if local_anime.watch_links.all %}
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
+                        <div class="relative w-full sm:w-auto flex-grow">
+                            <label for="watch-link-select" class="block text-sm font-medium text-gray-400 mb-1">Select Server</label>
+                            <select id="watch-link-select" class="watch-select w-full">
+                                <option value="">-- Choose a link --</option>
+                                {% for link in local_anime.watch_links.all %}
+                                <option value="{{ link.url }}">{{ link.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <label class="block text-sm font-medium text-transparent mb-1 hidden sm:block">Action</label>
+                            <a id="watch-now-button" href="#" target="_blank"
+                               class="w-full flex items-center justify-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg bg-gray-600 text-gray-400 cursor-not-allowed">
+                               <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M6 3v18l14-9z" /></svg>
+                               Watch Now
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
 
                     <h3 class="text-xl font-bold mb-3 text-white border-b border-gray-700 pb-2">Synopsis</h3>
                     <p class="text-gray-300 leading-relaxed mb-6">
                         {{ api.synopsis|default:local_anime.description|default:"No synopsis available."|truncatewords:80 }}
                     </p>
+                    
+                    <a href="{{ local_anime.download_link }}"
+                       class="inline-flex items-center font-bold py-3 px-6 rounded-lg transition duration-200 text-lg shadow-lg mb-8 {% if local_anime.download_link %}bg-blue-600 hover:bg-blue-700 text-white{% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
+                       <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                       Download
+                    </a>
 
                     <div class="space-y-2 text-sm text-white">
                         <div class="metadata-row">
@@ -131,8 +175,28 @@
             </div>
         </main>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const watchLinkSelect = document.getElementById('watch-link-select');
+            const watchNowButton = document.getElementById('watch-now-button');
+
+            if (watchLinkSelect && watchNowButton) {
+                watchLinkSelect.addEventListener('change', () => {
+                    const selectedUrl = watchLinkSelect.value;
+
+                    if (selectedUrl) {
+                        watchNowButton.href = selectedUrl;
+                        watchNowButton.classList.remove('bg-gray-600', 'text-gray-400', 'cursor-not-allowed');
+                        watchNowButton.classList.add('bg-cyan-400', 'hover:bg-cyan-500', 'text-gray-900');
+                    } else {
+                        watchNowButton.href = '#';
+                        watchNowButton.classList.add('bg-gray-600', 'text-gray-400', 'cursor-not-allowed');
+                        watchNowButton.classList.remove('bg-cyan-400', 'hover:bg-cyan-500', 'text-gray-900');
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
-
-

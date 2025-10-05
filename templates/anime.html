@@ -36,15 +36,27 @@
                 <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Login</a>
             </div>
         </header>
-
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h1 class="text-3xl font-bold mb-8">Anime</h1>
 
             <div class="flex flex-wrap items-center justify-between bg-gray-800 p-4 mb-8 rounded-lg">
-                <!-- Filter controls can be added here later -->
-                <p class="text-gray-400">Filter controls will go here.</p>
+                <form action="{% url 'anime:search' %}" method="GET" class="relative flex-grow max-w-lg">
+                    <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search for an anime to add..."
+                           class="w-full py-3 pl-12 pr-4 rounded-full text-md text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-500 transition duration-300 shadow-lg">
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <button type="submit" class="hidden">Search</button>
+                </form>
+                <a href="{% url 'anime:top_anime' %}" class="ml-4 mt-4 sm:mt-0 inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md">
+                    🔥 Top Airing
+                </a>
             </div>
             
+            {% if not anime_list.object_list %}
+            <p class="text-center text-gray-400 py-16">Your local anime database is empty. Use the search bar above to find and add anime.</p>
+            {% endif %}
+
             <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-x-4 gap-y-8">
                 {% for anime in anime_list %}
                 <a href="{% if anime.mal_id %}{% url 'anime:anime_detail' anime.mal_id %}{% else %}#{% endif %}" class="movie-card group block rounded-lg overflow-hidden transition duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/10">
@@ -92,10 +104,3 @@
 
 </body>
 </html>
-
-```
-
-**New File: `templates/anime/detail.html`**
-This template will display the combined local and API data for a single anime.
-
-```diff

@@ -17,6 +17,26 @@ def anime(request):
     }
     return render(request, 'anime.html', context)
 
+def anime_search_view(request):
+    query = request.GET.get('q', '')
+    results = []
+    error_message = None
+    jikan = Jikan()
+
+    if query:
+        try:
+            search_result = jikan.search('anime', query)
+            results = search_result.get('data', [])
+        except Exception as e:
+            error_message = f"Error searching for anime: {e}"
+
+    context = {
+        'query': query,
+        'results': results,
+        'error': error_message
+    }
+    return render(request, 'anime/search_results.html', context)
+
 def top_airing_anime(request):
     """
     Fetches the list of currently airing top anime from Jikan API.
@@ -27,23 +47,26 @@ def top_airing_anime(request):
 
     try:
         # 1. Call the top endpoint for 'anime' with filter 'airing'
-        # The result is paginated, so we only fetch the first page (default)
         top_anime_data = jikan.top(type='anime', page=1,)
         
         # 2. The actual data is under the 'data' key in V4 of the Jikan API
-        # We loop through the results to structure the data for the template
-        for anime in top_anime_data.get('data', []):
-            # The API response is a bit complex, so we carefully extract fields
-            anime_details = {
-                'id': anime.get('mal_id'),
-                'title': anime.get('title'),
-                'score': anime.get('score'),
-                'episodes': anime.get('episodes'),
-                'synopsis': anime.get('synopsis'),
-                # Extract image URL from the nested 'images' dictionary
-                'image_url': anime.get('images', {}).get('jpg', {}).get('image_url')
-            }
-            anime_list.append(anime_details)
+        api_results = top_anime_data.get('data', [])
+
+        for item in api_results:
+            mal_id = item.get('mal_id')
+            if not mal_id:
+                continue
+
+            # Use update_or_create to add new anime or update existing ones
+            anime_obj, created = Anime.objects.update_or_create(
+                mal_id=mal_id,
+                defaults={
+                    'title': item.get('title_english') or item.get('title'),
+                    'poster_api_url': item.get('images', {}).get('jpg', {}).get('large_image_url')
+                }
+            )
+            # We pass the API data directly to the template for immediate display
+            anime_list.append(item)
 
     except Exception as e:
         # This catches API request failures or rate-limit errors
@@ -52,14 +75,20 @@ def top_airing_anime(request):
 
     context = {
         'anime_list': anime_list,
-        'error': error_message,
+        'error': error_message
     }
     return render(request, 'anime/top_list.html', context)
 
 # Example for a specific anime detail (e.g., /anime/detail/1)
 def anime_details(request, mal_id):
-    # First, get the local anime object
-    local_anime = get_object_or_404(Anime, mal_id=mal_id)
+    # Use get_or_create. This is the key change.
+    # It tries to find an anime with the given mal_id.
+    # If it doesn't exist, it creates a new Anime object in the database.
+    # 'created' is a boolean that tells us if a new object was made.
+    local_anime, created = Anime.objects.get_or_create(
+        mal_id=mal_id,
+        defaults={'title': f'Anime ID {mal_id}'} # A temporary title
+    )
 
     jikan = Jikan()
     context = {'local_anime': local_anime} # Start context with local data
@@ -72,12 +101,22 @@ def anime_details(request, mal_id):
         if api_data:
             context['api'] = api_data
 
+            # If the local title is the temporary one, update it with the real title
+            english_title = api_data.get('title_english')
+            main_title = api_data.get('title')
+            if local_anime.title == f'Anime ID {mal_id}' or created:
+                local_anime.title = english_title or main_title
+
             # Save the poster URL from the API to our local anime object
             poster_url = api_data.get('images', {}).get('jpg', {}).get('large_image_url')
             if poster_url and local_anime.poster_api_url != poster_url:
                 local_anime.poster_api_url = poster_url
                 local_anime.save(update_fields=['poster_api_url'])
         else:
+            # If the API fails but we just created a local object, it's better to delete it
+            # to avoid having a permanent empty entry in the database.
+            if created:
+                local_anime.delete()
             context['api_error'] = "No data found for this anime in the API."
 
     except Exception as e:
